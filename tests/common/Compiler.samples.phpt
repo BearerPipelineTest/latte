@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Test: special cases
- */
-
 declare(strict_types=1);
 
 use Tester\Assert;
@@ -37,4 +33,23 @@ Assert::match(
 Assert::match(
 	"%A%('foo')/ **/('bar')%A%",
 	$latte->compile('{(foo)//**/**/(bar)}')
+);
+
+Assert::match(
+	"%A%
+		if (1) /* line 1 */ {
+			echo 'xxx';
+		}
+%A%",
+	$latte->compile('{if 1}xxx{/}')
+);
+
+Assert::match( // fix #58
+	'x',
+	$latte->renderToString('{contentType application/xml}{if true}x{/if}')
+);
+
+Assert::match(
+	'<a href=""></a>',
+	$latte->renderToString('<a href="{ifset $x}{$x}{/ifset}"></a>')
 );
